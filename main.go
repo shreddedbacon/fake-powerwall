@@ -13,7 +13,7 @@ func main() {
 	var inverter string
 	flag.StringVar(&inverter, "inverter", "http://192.168.1.50", "URL or IP for the host")
 	flag.Parse()
-	a := api.FakePowerall{
+	a := api.FakePowerwall{
 		Inverter: inverter,
 	}
 	r := mux.NewRouter()

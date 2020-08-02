@@ -13,7 +13,7 @@ import (
 )
 
 // FakePowerall holds the value for the inverter host that will get passed to the fronius client
-type FakePowerall struct {
+type FakePowerwall struct {
 	Inverter string
 }
 
@@ -43,7 +43,7 @@ type AggregateData struct {
 }
 
 // GetMetersAggregates returns a response that is similar to `/api/meters/aggregates` that a local PW would return
-func (f *FakePowerall) GetMetersAggregates(w http.ResponseWriter, r *http.Request) {
+func (f *FakePowerwall) GetMetersAggregates(w http.ResponseWriter, r *http.Request) {
 	d, _ := fronius.New(f.Inverter)
 	// Get the realtime powerflow data
 	p, _ := d.GetPowerFlowRealtimeData()
@@ -62,7 +62,7 @@ func (f *FakePowerall) GetMetersAggregates(w http.ResponseWriter, r *http.Reques
 }
 
 // Request performs a request against a powerwall api endpoint
-func (f *FakePowerall) Request(endpoint string) ([]byte, error) {
+func (f *FakePowerwall) Request(endpoint string) ([]byte, error) {
 	netClientTimeout := 10
 	var netClient = &http.Client{
 		Timeout: time.Second * time.Duration(netClientTimeout),
