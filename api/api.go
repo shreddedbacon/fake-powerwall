@@ -1,8 +1,11 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -56,4 +59,29 @@ func (f *FakePowerall) GetMetersAggregates(w http.ResponseWriter, r *http.Reques
 	pwb, _ := json.Marshal(pwd)
 	// Return the bytes as string
 	fmt.Fprintln(w, string(pwb))
+}
+
+// Request performs a request against a powerwall api endpoint
+func (f *FakePowerall) Request(endpoint string) ([]byte, error) {
+	netClientTimeout := 10
+	var netClient = &http.Client{
+		Timeout: time.Second * time.Duration(netClientTimeout),
+	}
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", f.Inverter, endpoint), bytes.NewBuffer([]byte{}))
+	if err != nil {
+		return []byte{}, err
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := netClient.Do(req)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	rBody, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return []byte{}, errors.New("error performing check or connecting to powerwall")
+	}
+	return rBody, nil
 }
