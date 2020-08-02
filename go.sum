@@ -1,0 +1,4 @@
+github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
+github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
+github.com/shreddedbacon/fronius-client v0.0.0-20200801022642-c5a2d3cf3579 h1:uXMLoZUQgU2poPP17VMorhmeF0zf8CVfZvgpPqPGsYs=
+github.com/shreddedbacon/fronius-client v0.0.0-20200801022642-c5a2d3cf3579/go.mod h1:D8KPUCiReVU6YHZlIr9wvgzLmMnRmFs0RJOPiDMFzSg=
