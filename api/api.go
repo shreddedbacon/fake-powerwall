@@ -12,9 +12,12 @@ import (
 	"github.com/shreddedbacon/fronius-client/fronius"
 )
 
-// FakePowerall holds the value for the inverter host that will get passed to the fronius client
+// FakePowerwall holds the value for the inverter host that will get passed to the fronius client
 type FakePowerwall struct {
-	Inverter string
+	Inverter     string
+	InverterType string
+	CloudBased   bool
+	AuthToken    string
 }
 
 // MetersAggregates is the data structure for `/api/meters/aggretates` response from the PW api.
@@ -44,16 +47,29 @@ type AggregateData struct {
 
 // GetMetersAggregates returns a response that is similar to `/api/meters/aggregates` that a local PW would return
 func (f *FakePowerwall) GetMetersAggregates(w http.ResponseWriter, r *http.Request) {
-	d, _ := fronius.New(f.Inverter)
-	// Get the realtime powerflow data
-	p, _ := d.GetPowerFlowRealtimeData()
-	// Craft our response payload, we only need the instant power value as this is
-	// what is needed to determine how many watts are being fed into the grid
-	pwd := MetersAggregates{
-		Site: &AggregateData{
-			LastCommunicationTime: time.Now().UTC(),
-			InstantPower:          p.Body.Data.Site.PGrid, // This is what we need from the inverter
-		},
+	pwd := MetersAggregates{}
+
+	switch f.InverterType {
+	case "fronius":
+		d, _ := fronius.New(f.Inverter)
+		// Get the realtime powerflow data
+		p, _ := d.GetPowerFlowRealtimeData()
+		// Craft our response payload, we only need the instant power value as this is
+		// what is needed to determine how many watts are being fed into the grid
+		pwd = MetersAggregates{
+			Site: &AggregateData{
+				LastCommunicationTime: time.Now().UTC(),
+				InstantPower:          p.Body.Data.Site.PGrid, // This is what we need from the inverter
+			},
+			Load: &AggregateData{
+				LastCommunicationTime: time.Now().UTC(),
+				InstantPower:          p.Body.Data.Site.PLoad,
+			},
+			Solar: &AggregateData{
+				LastCommunicationTime: time.Now().UTC(),
+				InstantPower:          p.Body.Data.Site.PPV,
+			},
+		}
 	}
 	// Marshal the data into json bytes
 	pwb, _ := json.Marshal(pwd)
