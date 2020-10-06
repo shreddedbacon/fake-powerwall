@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -80,8 +81,12 @@ func (f *FakePowerwall) GetMetersAggregates(w http.ResponseWriter, r *http.Reque
 // Request performs a request against a powerwall api endpoint
 func (f *FakePowerwall) Request(endpoint string) ([]byte, error) {
 	netClientTimeout := 10
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	var netClient = &http.Client{
-		Timeout: time.Second * time.Duration(netClientTimeout),
+		Timeout:   time.Second * time.Duration(netClientTimeout),
+		Transport: tr,
 	}
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", f.Inverter, endpoint), bytes.NewBuffer([]byte{}))
 	if err != nil {
