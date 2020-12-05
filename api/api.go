@@ -64,11 +64,15 @@ func (f *FakePowerwall) GetMetersAggregates(w http.ResponseWriter, r *http.Reque
 			},
 			Load: &AggregateData{
 				LastCommunicationTime: time.Now().UTC(),
-				InstantPower:          p.Body.Data.Site.PLoad,
+				InstantPower:          p.Body.Data.Site.PLoad * -1, // powerwall inverts this value
 			},
 			Solar: &AggregateData{
 				LastCommunicationTime: time.Now().UTC(),
 				InstantPower:          p.Body.Data.Site.PPV,
+			},
+			Battery: &AggregateData{
+				LastCommunicationTime: time.Now().UTC(),
+				InstantPower:          0,
 			},
 		}
 	}
