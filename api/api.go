@@ -46,6 +46,23 @@ type AggregateData struct {
 	Timeout               int       `json:"timeout"`
 }
 
+// PowerwallStatus shows the status of the powerwall
+type PowerwallStatus struct {
+	StartTime       string `json:"start_time"`
+	UpTimeSeconds   string `json:"up_time_seconds"`
+	IsNew           bool   `json:"is_new"`
+	Version         string `json:"version"`
+	GitHash         string `json:"git_hash"`
+	CommissionCount int    `json:"commission_count"`
+	DeviceType      string `json:"device_type"`
+	SyncType        string `json:"sync_type"`
+}
+
+// SystemSOE is the system state of energy? which shows the battery percentage
+type SystemSOE struct {
+	Percentage float64 `json:"percentage"`
+}
+
 // GetMetersAggregates returns a response that is similar to `/api/meters/aggregates` that a local PW would return
 func (f *FakePowerwall) GetMetersAggregates(w http.ResponseWriter, r *http.Request) {
 	pwd := MetersAggregates{}
@@ -75,6 +92,17 @@ func (f *FakePowerwall) GetMetersAggregates(w http.ResponseWriter, r *http.Reque
 				InstantPower:          0,
 			},
 		}
+	}
+	// Marshal the data into json bytes
+	pwb, _ := json.Marshal(pwd)
+	// Return the bytes as string
+	fmt.Fprintln(w, string(pwb))
+}
+
+// GetSystemSOE returns a response that is similar to `/api/system_status/soe` that a local PW would return
+func (f *FakePowerwall) GetSystemSOE(w http.ResponseWriter, r *http.Request) {
+	pwd := SystemSOE{
+		Percentage: 0.0,
 	}
 	// Marshal the data into json bytes
 	pwb, _ := json.Marshal(pwd)

@@ -42,6 +42,7 @@ func main() {
 	// API
 	// Handle setting the maximum available amperate
 	r.HandleFunc("/api/meters/aggregates", a.GetMetersAggregates).Methods("GET")
+	r.HandleFunc("/api/system_status/soe", a.GetSystemSOE).Methods("GET")
 	http.Handle("/", r)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
